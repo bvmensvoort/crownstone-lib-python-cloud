@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 from aiohttp import ClientSession, ContentTypeError
 
-from crownstone_cloud.const import BASE_URL, LOGIN_URL
+from crownstone_cloud.const import DEFAULT_CLOUD_ADDR, CLOUD_LOGIN_SUFFIX
 from crownstone_cloud.exceptions import (
     AuthError,
     CrownstoneAuthenticationError,
@@ -33,7 +33,7 @@ class RequestHandler:
 
     async def request_login(self, login_data: dict[str, Any]) -> Any:
         """Request a login to the Crownstone Cloud API."""
-        response = await self.request("post", LOGIN_URL, login_data)
+        response = await self.request("post", f"{DEFAULT_CLOUD_ADDR}{CLOUD_LOGIN_SUFFIX}", login_data)
 
         return response
 
@@ -54,9 +54,9 @@ class RequestHandler:
         :return: Dictionary with the response from the cloud.
         """
         if model_id:
-            url = f"{BASE_URL}{model}/{model_id}/{endpoint}?access_token={self.cloud.access_token}"
+            url = f"{DEFAULT_CLOUD_ADDR}/{model}/{model_id}/{endpoint}?access_token={self.cloud.access_token}"
         else:
-            url = f"{BASE_URL}{model}{endpoint}?access_token={self.cloud.access_token}"
+            url = f"{DEFAULT_CLOUD_ADDR}/{model}{endpoint}?access_token={self.cloud.access_token}"
 
         return await self.request("post", url, json)
 
@@ -78,13 +78,13 @@ class RequestHandler:
         """
         if data_filter and model_id:
             url = (
-                f"{BASE_URL}{model}/{model_id}/{endpoint}?filter={quote_json(data_filter)}&access_token="
+                f"{DEFAULT_CLOUD_ADDR}/{model}/{model_id}/{endpoint}?filter={quote_json(data_filter)}&access_token="
                 f"{self.cloud.access_token}"
             )
         elif model_id and not data_filter:
-            url = f"{BASE_URL}{model}/{model_id}/{endpoint}?access_token={self.cloud.access_token}"
+            url = f"{DEFAULT_CLOUD_ADDR}/{model}/{model_id}/{endpoint}?access_token={self.cloud.access_token}"
         else:
-            url = f"{BASE_URL}{model}{endpoint}?access_token={self.cloud.access_token}"
+            url = f"{DEFAULT_CLOUD_ADDR}/{model}{endpoint}?access_token={self.cloud.access_token}"
 
         return await self.request("get", url)
 
@@ -102,7 +102,7 @@ class RequestHandler:
         :return: Dictionary with the response from the cloud.
         """
         url = (
-            f"{BASE_URL}{model}/{model_id}/{endpoint}?{command}={str(value)}&access_token="
+            f"{DEFAULT_CLOUD_ADDR}/{model}/{model_id}/{endpoint}?{command}={str(value)}&access_token="
             f"{self.cloud.access_token}"
         )
 
